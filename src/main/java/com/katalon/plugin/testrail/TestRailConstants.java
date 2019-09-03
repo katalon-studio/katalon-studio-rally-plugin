@@ -1,7 +1,7 @@
 package com.katalon.plugin.testrail;
 
 public interface TestRailConstants {
-    String PLUGIN_ID = "com.katalon.katalon-studio-testrail-plugin";
+    String PLUGIN_ID = "com.katalon.katalon-studio-rally-plugin";
     
     String PREF_PAGE_ID = "com.katalon.plugin.testrail.TestRailPluginPreferencePage";
 

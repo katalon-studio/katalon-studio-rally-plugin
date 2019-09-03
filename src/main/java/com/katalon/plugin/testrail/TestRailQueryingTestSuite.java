@@ -26,35 +26,9 @@ public class TestRailQueryingTestSuite implements DynamicQueryingTestSuiteDescri
         FolderEntity testCaseRoot = folderController.getFolder(project, "Test Cases");
         List<TestCaseEntity> allTestCases = getAllTestCases(project, testCaseRoot);
 
-        String testRunId = TestRailHelper.parseId(s, "^R(\\d+)");
         PluginPreference preferences = getPluginStore();
-        TestRailConnector connector = new TestRailConnector(
-                preferences.getString(TestRailConstants.PREF_TESTRAIL_URL, ""),
-                preferences.getString(TestRailConstants.PREF_TESTRAIL_USERNAME, ""),
-                preferences.getString(TestRailConstants.PREF_TESTRAIL_PASSWORD, "")
-        );
-        List<TestCaseEntity> resultTestCases = new ArrayList<>();
-        if (testRunId.equals("")) return resultTestCases;
 
-        try {
-            List<Long> testCaseIdInRun = connector.getTestCaseIdInRun(testRunId);
-            allTestCases.forEach(testCaseEntity -> {
-                Integration integration = testCaseEntity.getIntegration(TestRailConstants.INTEGRATION_ID);
-                if (integration == null) {
-                    return;
-                }
-                Map<String, String> props = integration.getProperties();
-                if (props.containsKey(TestRailConstants.INTEGRATION_TESTCASE_ID)) {
-                    String testCaseId = props.get(TestRailConstants.INTEGRATION_TESTCASE_ID);
-                    if (testCaseIdInRun.contains(Long.parseLong(testCaseId))) {
-                        System.out.println("Found testCaseId " + testCaseId);
-                        resultTestCases.add(testCaseEntity);
-                    }
-                }
-            });
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        List<TestCaseEntity> resultTestCases = new ArrayList<>();
 
         return resultTestCases;
     }

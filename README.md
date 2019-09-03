@@ -1,1 +1,1 @@
-# Katalon Studio plugin for TestRail integration
+# Katalon Studio plugin for Rally integration

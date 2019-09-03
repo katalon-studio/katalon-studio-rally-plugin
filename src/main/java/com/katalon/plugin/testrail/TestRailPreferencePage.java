@@ -26,13 +26,11 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
 
     private Group grpAuthentication;
 
-    private Text txtUsername;
-
-    private Text txtPassword;
+    private Text txtApiKey;
 
     private Text txtUrl;
 
-    private Text txtProject;
+    private Text txtWorkspace;
 
     private Composite container;
 
@@ -48,7 +46,7 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
         container.setLayout(new GridLayout(1, false));
 
         chckEnableIntegration = new Button(container, SWT.CHECK);
-        chckEnableIntegration.setText("Using TestRail");
+        chckEnableIntegration.setText("Using Rally");
 
         grpAuthentication = new Group(container, SWT.NONE);
         grpAuthentication.setLayoutData(new GridData(SWT.FILL, SWT.TOP, true, false));
@@ -61,25 +59,21 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
         createLabel("URL");
         txtUrl = createTextbox();
 
-        createLabel("Username");
-        txtUsername = createTextbox();
+        createLabel("Api Key");
+        txtApiKey = createPasswordTextbox();
 
-        createLabel("Password");
-        txtPassword = createPasswordTextbox();
-
-        createLabel("Project");
-        txtProject = createTextbox();
+        createLabel("Workspace");
+        txtWorkspace = createTextbox();
 
         btnTestConnection = new Button(grpAuthentication, SWT.PUSH);
         btnTestConnection.setText("Test Connection");
         btnTestConnection.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                testTestRailConnection(
-                        txtUsername.getText(),
-                        txtPassword.getText(),
+                testConnect(
+                        txtApiKey.getText(),
                         txtUrl.getText(),
-                        txtProject.getText()
+                        txtWorkspace.getText()
                 );
             }
         });
@@ -117,15 +111,14 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
         label.setLayoutData(gridData);
     }
 
-    private void testTestRailConnection(String username, String password, String url, String project) {
+    private void testConnect(String url, String apiKey, String project) {
         btnTestConnection.setEnabled(false);
         lblConnectionStatus.setForeground(lblConnectionStatus.getDisplay().getSystemColor(SWT.COLOR_BLACK));
         lblConnectionStatus.setText("Connecting...");
         thread = new Thread(() -> {
             try {
                 // test connection here
-                TestRailConnector connector = new TestRailConnector(url, username, password);
-                connector.getProject(project);
+                RallyConnector connector = new RallyConnector(url, apiKey, project);
 
                 syncExec(() -> {
                     lblConnectionStatus
@@ -187,10 +180,9 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
             PluginPreference pluginStore = getPluginStore();
 
             pluginStore.setBoolean(TestRailConstants.PREF_TESTRAIL_ENABLED, chckEnableIntegration.getSelection());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_USERNAME, txtUsername.getText());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PASSWORD, txtPassword.getText());
+            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PASSWORD, txtApiKey.getText());
             pluginStore.setString(TestRailConstants.PREF_TESTRAIL_URL, txtUrl.getText());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PROJECT, txtProject.getText());
+            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PROJECT, txtWorkspace.getText());
 
             pluginStore.save();
 
@@ -208,10 +200,9 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
             chckEnableIntegration.setSelection(pluginStore.getBoolean(TestRailConstants.PREF_TESTRAIL_ENABLED, false));
             chckEnableIntegration.notifyListeners(SWT.Selection, new Event());
 
-            txtUsername.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_USERNAME, ""));
-            txtPassword.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PASSWORD, ""));
+            txtApiKey.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PASSWORD, ""));
             txtUrl.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_URL, ""));
-            txtProject.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PROJECT, ""));
+            txtWorkspace.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PROJECT, ""));
 
             container.layout(true, true);
         } catch (ResourceException e) {

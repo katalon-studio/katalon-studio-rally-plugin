@@ -11,8 +11,8 @@
     </parent>
 
     <groupId>com.katalon</groupId>
-    <artifactId>katalon-studio-testrail-plugin</artifactId>
-    <version>1.0.8</version>
+    <artifactId>katalon-studio-rally-plugin</artifactId>
+    <version>1.0.0</version>
 
     <packaging>bundle</packaging>
 
@@ -28,6 +28,11 @@
             <groupId>com.googlecode.json-simple</groupId>
             <artifactId>json-simple</artifactId>
             <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.rallydev.rest</groupId>
+            <artifactId>rally-rest-api</artifactId>
+            <version>2.2.1</version>
         </dependency>
     </dependencies>
 
@@ -71,7 +76,7 @@
                         <_nouse>true</_nouse>
 
                         <!-- Change your public package here -->
-                        <Export-Package>com.katalon.plugin.testrail*</Export-Package>
+                        <Export-Package>com.katalon.plugin.rally*</Export-Package>
                     </instructions>
                 </configuration>
             </plugin>

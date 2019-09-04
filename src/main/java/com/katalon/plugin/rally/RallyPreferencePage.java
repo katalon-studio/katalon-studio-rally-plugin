@@ -1,4 +1,4 @@
-package com.katalon.plugin.testrail;
+package com.katalon.plugin.rally;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
@@ -20,7 +20,7 @@ import com.katalon.platform.api.preference.PluginPreference;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.platform.api.ui.UISynchronizeService;
 
-public class TestRailPreferencePage extends PreferencePage implements TestRailComponent {
+public class RallyPreferencePage extends PreferencePage implements RallyComponent {
 
     private Button chckEnableIntegration;
 
@@ -126,7 +126,7 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
                     lblConnectionStatus.setText("Succeeded!");
                 });
             } catch (Exception e) {
-                System.err.println("Cannot connect to TestRail.");
+                System.err.println("Cannot connect to Rally.");
                 e.printStackTrace(System.err);
                 syncExec(() -> {
                     lblConnectionStatus
@@ -179,16 +179,16 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
         try {
             PluginPreference pluginStore = getPluginStore();
 
-            pluginStore.setBoolean(TestRailConstants.PREF_TESTRAIL_ENABLED, chckEnableIntegration.getSelection());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PASSWORD, txtApiKey.getText());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_URL, txtUrl.getText());
-            pluginStore.setString(TestRailConstants.PREF_TESTRAIL_PROJECT, txtWorkspace.getText());
+            pluginStore.setBoolean(RallyConstant.PREF_RALLY_ENABLED, chckEnableIntegration.getSelection());
+            pluginStore.setString(RallyConstant.PREF_RALLY_API_KEY, txtApiKey.getText());
+            pluginStore.setString(RallyConstant.PREF_RALLY_URL, txtUrl.getText());
+            pluginStore.setString(RallyConstant.PREF_RALLY_PROJECT, txtWorkspace.getText());
 
             pluginStore.save();
 
             return true;
         } catch (ResourceException e) {
-            MessageDialog.openWarning(getShell(), "Warning", "Unable to update TestRail Integration Settings.");
+            MessageDialog.openWarning(getShell(), "Warning", "Unable to update Rally Integration Settings.");
             return false;
         }
     }
@@ -197,16 +197,16 @@ public class TestRailPreferencePage extends PreferencePage implements TestRailCo
         try {
             PluginPreference pluginStore = getPluginStore();
 
-            chckEnableIntegration.setSelection(pluginStore.getBoolean(TestRailConstants.PREF_TESTRAIL_ENABLED, false));
+            chckEnableIntegration.setSelection(pluginStore.getBoolean(RallyConstant.PREF_RALLY_ENABLED, false));
             chckEnableIntegration.notifyListeners(SWT.Selection, new Event());
 
-            txtApiKey.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PASSWORD, ""));
-            txtUrl.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_URL, ""));
-            txtWorkspace.setText(pluginStore.getString(TestRailConstants.PREF_TESTRAIL_PROJECT, ""));
+            txtApiKey.setText(pluginStore.getString(RallyConstant.PREF_RALLY_API_KEY, ""));
+            txtUrl.setText(pluginStore.getString(RallyConstant.PREF_RALLY_URL, ""));
+            txtWorkspace.setText(pluginStore.getString(RallyConstant.PREF_RALLY_PROJECT, ""));
 
             container.layout(true, true);
         } catch (ResourceException e) {
-            MessageDialog.openWarning(getShell(), "Warning", "Unable to update TestRail Integration Settings.");
+            MessageDialog.openWarning(getShell(), "Warning", "Unable to update Rally Integration Settings.");
         }
     }
 }

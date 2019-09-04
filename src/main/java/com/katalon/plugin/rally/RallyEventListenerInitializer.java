@@ -1,4 +1,4 @@
-package com.katalon.plugin.testrail;
+package com.katalon.plugin.rally;
 
 import org.osgi.service.event.Event;
 
@@ -9,18 +9,18 @@ import com.katalon.platform.api.extension.EventListenerInitializer;
 import com.katalon.platform.api.preference.PluginPreference;
 
 
-public class TestRailEventListenerInitializer implements EventListenerInitializer, TestRailComponent {
+public class RallyEventListenerInitializer implements EventListenerInitializer, RallyComponent {
 
     @Override
     public void registerListener(EventListener listener) {
         listener.on(Event.class, event -> {
             try {
                 PluginPreference preferences = getPluginStore();
-                boolean isIntegrationEnabled = preferences.getBoolean(TestRailConstants.PREF_TESTRAIL_ENABLED, false);
+                boolean isIntegrationEnabled = preferences.getBoolean(RallyConstant.PREF_RALLY_ENABLED, false);
                 if (!isIntegrationEnabled) {
                     return;
                 }
-                String authToken = preferences.getString(TestRailConstants.PREF_TESTRAIL_USERNAME, "");
+                String authToken = preferences.getString(RallyConstant.PREF_RALLY_USERNAME, "");
 
                 if (ExecutionEvent.TEST_SUITE_FINISHED_EVENT.equals(event.getTopic())) {
                     ExecutionEvent eventObject = (ExecutionEvent) event.getProperty("org.eclipse.e4.data");
@@ -28,7 +28,7 @@ public class TestRailEventListenerInitializer implements EventListenerInitialize
                     TestSuiteExecutionContext testSuiteContext = (TestSuiteExecutionContext) eventObject
                             .getExecutionContext();
                     TestSuiteStatusSummary testSuiteSummary = TestSuiteStatusSummary.of(testSuiteContext);
-                    System.out.println("TestRail: Start sending summary message to channel:");
+                    System.out.println("Rally: Start sending summary message to channel:");
                     System.out.println(
                             "Summary execution result of test suite: " + testSuiteContext.getSourceId()
                                     + "\nTotal test cases: " + Integer.toString(testSuiteSummary.getTotalTestCases())
@@ -36,17 +36,7 @@ public class TestRailEventListenerInitializer implements EventListenerInitialize
                                     + "\nTotal failures: " + Integer.toString(testSuiteSummary.getTotalFailures())
                                     + "\nTotal errors: " + Integer.toString(testSuiteSummary.getTotalErrors())
                                     + "\nTotal skipped: " + Integer.toString(testSuiteSummary.getTotalSkipped()));
-                    System.out.println("TestRail: Summary message has been successfully sent");
-
-//                    TestRailConnector connector = new TestRailConnector(
-//                            preferences.getString(TestRailConstants.PREF_TESTRAIL_URL, ""),
-//                            preferences.getString(TestRailConstants.PREF_TESTRAIL_USERNAME, ""),
-//                            preferences.getString(TestRailConstants.PREF_TESTRAIL_PASSWORD, "")
-//                    );
-//                    String projectId = preferences.getString(TestRailConstants.PREF_TESTRAIL_PROJECT, "");
-//
-//                    ProjectEntity project = ApplicationManager.getInstance().getProjectManager().getCurrentProject();
-//                    TestCaseController controller = ApplicationManager.getInstance().getControllerManager().getController(TestCaseController.class);
+                    System.out.println("Rally: Summary message has been successfully sent");
 
                 }
             } catch (Exception e) {

@@ -1,4 +1,4 @@
-package com.katalon.plugin.testrail;
+package com.katalon.plugin.rally;
 
 import com.katalon.platform.api.execution.TestSuiteExecutionContext;
 

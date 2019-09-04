@@ -2,41 +2,41 @@
     <extension
             point="com.katalon.platform.extensions">
         <point
-                id="com.katalon.plugin.testrail.TestRailEventListenerInitializer"
+                id="com.katalon.plugin.rally.RallyEventListenerInitializer"
                 extensionPointId="com.katalon.platform.api.extension.eventListener"
-                implementationClass="com.katalon.plugin.testrail.TestRailEventListenerInitializer">
+                implementationClass="com.katalon.plugin.rally.RallyEventListenerInitializer">
         </point>
     </extension>
     <extension
             point="com.katalon.platform.extensions">
         <point
-                id="com.katalon.plugin.testrail.TestRailToolItemDescription"
+                id="com.katalon.plugin.rally.RallyToolItemDescription"
                 extensionPointId="com.katalon.platform.api.extension.newToolItem"
-                implementationClass="com.katalon.plugin.testrail.TestRailToolItemDescription">
+                implementationClass="com.katalon.plugin.rally.RallyToolItemDescription">
         </point>
     </extension>
     <extension
          point="com.katalon.platform.extensions">
       <point
-            id="com.katalon.plugin.testrail.TestRailPluginPreferencePage"
+            id="com.katalon.plugin.rally.RallyPluginPreferencePage"
             extensionPointId="com.katalon.platform.api.extension.pluginPreferencePage"
-            implementationClass="com.katalon.plugin.testrail.TestRailPluginPreferencePage">
+            implementationClass="com.katalon.plugin.rally.RallyPluginPreferencePage">
       </point>
     </extension>
     <extension
             point="com.katalon.platform.extensions">
         <point
-                id="com.katalon.plugin.testrail.TestRailTestCaseIntegrationPage"
+                id="com.katalon.plugin.rally.RallyTestCaseIntegrationPage"
                 extensionPointId="com.katalon.platform.api.extension.testCaseIntegrationViewDescription"
-                implementationClass="com.katalon.plugin.testrail.TestRailTestCaseIntegrationViewDescription">
+                implementationClass="com.katalon.plugin.rally.RallyTestCaseIntegrationViewDescription">
         </point>
     </extension>
     <extension
             point="com.katalon.platform.extensions">
         <point
-                id="com.katalon.plugin.dynamic_execution.TestRailFilteringTestSuiteImpl"
+                id="com.katalon.plugin.dynamic_execution.RallyFilteringTestSuiteImpl"
                 extensionPointId="com.katalon.platform.api.extension.dynamicQueryingTestSuiteDescription"
-                implementationClass="com.katalon.plugin.testrail.TestRailQueryingTestSuite">
+                implementationClass="com.katalon.plugin.rally.RallyQueryingTestSuite">
         </point>
     </extension>
 </plugin>

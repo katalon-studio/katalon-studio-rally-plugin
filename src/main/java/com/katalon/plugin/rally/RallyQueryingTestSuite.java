@@ -1,4 +1,4 @@
-package com.katalon.plugin.testrail;
+package com.katalon.plugin.rally;
 
 import com.katalon.platform.api.controller.FolderController;
 import com.katalon.platform.api.exception.ResourceException;
@@ -9,16 +9,15 @@ import com.katalon.platform.api.service.ApplicationManager;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
-public class TestRailQueryingTestSuite implements DynamicQueryingTestSuiteDescription, TestRailComponent {
+public class RallyQueryingTestSuite implements DynamicQueryingTestSuiteDescription, RallyComponent {
     private FolderController folderController = ApplicationManager.getInstance()
             .getControllerManager()
             .getController(FolderController.class);
 
     @Override
     public String getQueryingType() {
-        return "TestRail";
+        return "Rally";
     }
 
     @Override

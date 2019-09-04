@@ -1,4 +1,4 @@
-package com.katalon.plugin.testrail;
+package com.katalon.plugin.rally;
 
 import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription;
 import com.katalon.platform.api.model.Integration;
@@ -10,7 +10,7 @@ import org.eclipse.swt.widgets.*;
 
 import java.util.Map;
 
-public class TestRailTestCaseIntegrationView implements TestCaseIntegrationViewDescription.TestCaseIntegrationView {
+public class RallyTestCaseIntegrationView implements TestCaseIntegrationViewDescription.TestCaseIntegrationView {
 
     private Composite container;
 
@@ -31,11 +31,11 @@ public class TestRailTestCaseIntegrationView implements TestCaseIntegrationViewD
         gridLayout.horizontalSpacing = 15;
         container.setLayout(gridLayout);
 
-        Integration integration = testCase.getIntegration(TestRailConstants.INTEGRATION_ID);
+        Integration integration = testCase.getIntegration(RallyConstant.INTEGRATION_ID);
         if(integration != null) {
             Map<String, String> integrationProps = integration.getProperties();
-           if(integrationProps.containsKey(TestRailConstants.INTEGRATION_TESTCASE_ID)){
-               txtId.setText(integrationProps.get(TestRailConstants.INTEGRATION_TESTCASE_ID));
+           if(integrationProps.containsKey(RallyConstant.INTEGRATION_TESTCASE_ID)){
+               txtId.setText(integrationProps.get(RallyConstant.INTEGRATION_TESTCASE_ID));
            }
         }
 
@@ -64,7 +64,7 @@ public class TestRailTestCaseIntegrationView implements TestCaseIntegrationViewD
 
     @Override
     public Integration getIntegrationBeforeSaving() {
-        TestRailTestCaseIntegration integration = new TestRailTestCaseIntegration();
+        RallyTestCaseIntegration integration = new RallyTestCaseIntegration();
         integration.setTestCaseId(txtId.getText());
         isEdited = false;
         return integration;

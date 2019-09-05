@@ -1,5 +1,13 @@
 package com.katalon.plugin.rally;
 
+import com.katalon.platform.api.Application;
+import com.katalon.platform.api.controller.TestCaseController;
+import com.katalon.platform.api.exception.ResourceException;
+import com.katalon.platform.api.model.Integration;
+import com.katalon.platform.api.model.ProjectEntity;
+import com.katalon.platform.api.model.TestCaseEntity;
+import com.katalon.platform.api.service.ApplicationManager;
+import com.rallydev.rest.util.QueryFilter;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.event.EventListener;
@@ -20,8 +28,6 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
                 if (!isIntegrationEnabled) {
                     return;
                 }
-                String authToken = preferences.getString(RallyConstant.PREF_RALLY_USERNAME, "");
-
                 if (ExecutionEvent.TEST_SUITE_FINISHED_EVENT.equals(event.getTopic())) {
                     ExecutionEvent eventObject = (ExecutionEvent) event.getProperty("org.eclipse.e4.data");
 
@@ -38,6 +44,32 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
                                     + "\nTotal skipped: " + Integer.toString(testSuiteSummary.getTotalSkipped()));
                     System.out.println("Rally: Summary message has been successfully sent");
 
+                    RallyConnector connector = new RallyConnector(
+                            preferences.getString(RallyConstant.PREF_RALLY_URL, ""),
+                            preferences.getString(RallyConstant.PREF_RALLY_API_KEY, ""),
+                            preferences.getString(RallyConstant.PREF_RALLY_WORKSPACE, "")
+                    );
+
+                    Application application = ApplicationManager.getInstance();
+                    ProjectEntity project = application.getProjectManager().getCurrentProject();
+                    TestCaseController controller = application.getControllerManager().getController(TestCaseController.class);
+                    testSuiteContext.getTestCaseContexts().forEach(testCaseExecutionContext -> {
+                        try {
+                            TestCaseEntity testCaseEntity = controller.getTestCase(project, testCaseExecutionContext.getId());
+                            Integration integration = testCaseEntity.getIntegration(RallyConstant.INTEGRATION_ID);
+                            if (integration == null) {
+                                return;
+                            }
+                            String rallyTCFormattedId = integration.getProperties().get(RallyConstant.INTEGRATION_TESTCASE_ID);
+                            QueryFilter filter = new QueryFilter(RallyConstant.RALLY_FIELD_FORMATTED_ID,
+                                    "=", rallyTCFormattedId);
+                            String testCaseRef = connector.query(RallyConstant.RALLY_TYPE_TEST_CASE, filter);
+                            connector.createTestCaseResult(testSuiteContext.getSourceId(), testCaseRef, testCaseExecutionContext);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    });
                 }
             } catch (Exception e) {
                 e.printStackTrace(System.out);

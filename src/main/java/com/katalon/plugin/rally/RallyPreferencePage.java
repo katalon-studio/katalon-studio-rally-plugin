@@ -71,8 +71,8 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 testConnect(
-                        txtApiKey.getText(),
                         txtUrl.getText(),
+                        txtApiKey.getText(),
                         txtWorkspace.getText()
                 );
             }
@@ -182,7 +182,7 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             pluginStore.setBoolean(RallyConstant.PREF_RALLY_ENABLED, chckEnableIntegration.getSelection());
             pluginStore.setString(RallyConstant.PREF_RALLY_API_KEY, txtApiKey.getText());
             pluginStore.setString(RallyConstant.PREF_RALLY_URL, txtUrl.getText());
-            pluginStore.setString(RallyConstant.PREF_RALLY_PROJECT, txtWorkspace.getText());
+            pluginStore.setString(RallyConstant.PREF_RALLY_WORKSPACE, txtWorkspace.getText());
 
             pluginStore.save();
 
@@ -202,7 +202,7 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
 
             txtApiKey.setText(pluginStore.getString(RallyConstant.PREF_RALLY_API_KEY, ""));
             txtUrl.setText(pluginStore.getString(RallyConstant.PREF_RALLY_URL, ""));
-            txtWorkspace.setText(pluginStore.getString(RallyConstant.PREF_RALLY_PROJECT, ""));
+            txtWorkspace.setText(pluginStore.getString(RallyConstant.PREF_RALLY_WORKSPACE, ""));
 
             container.layout(true, true);
         } catch (ResourceException e) {

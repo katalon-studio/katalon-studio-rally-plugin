@@ -1,5 +1,6 @@
 package com.katalon.plugin.rally;
 
+import com.katalon.plugin.rally.model.RallyWorkspace;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
@@ -14,11 +15,16 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Group;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Text;
+import org.eclipse.swt.widgets.Combo;
 
 import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.preference.PluginPreference;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.platform.api.ui.UISynchronizeService;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.IntStream;
 
 public class RallyPreferencePage extends PreferencePage implements RallyComponent {
 
@@ -26,11 +32,13 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
 
     private Group grpAuthentication;
 
+    private Group grpSelect;
+
     private Text txtApiKey;
 
     private Text txtUrl;
 
-    private Text txtWorkspace;
+    private Combo cbbWorkspace;
 
     private Composite container;
 
@@ -39,6 +47,10 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
     private Label lblConnectionStatus;
 
     private Thread thread;
+
+    private String workspaceRefFromConfig;
+
+    List<RallyWorkspace> workspaces = new ArrayList<>();
 
     @Override
     protected Control createContents(Composite composite) {
@@ -62,18 +74,16 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
         createLabel("Api Key");
         txtApiKey = createPasswordTextbox();
 
-        createLabel("Workspace");
-        txtWorkspace = createTextbox();
+        createSelectGroup();
 
         btnTestConnection = new Button(grpAuthentication, SWT.PUSH);
-        btnTestConnection.setText("Test Connection");
+        btnTestConnection.setText("Connect");
         btnTestConnection.addSelectionListener(new SelectionAdapter() {
             @Override
             public void widgetSelected(SelectionEvent e) {
-                testConnect(
+                connect(
                         txtUrl.getText(),
-                        txtApiKey.getText(),
-                        txtWorkspace.getText()
+                        txtApiKey.getText()
                 );
             }
         });
@@ -88,6 +98,23 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
         return container;
     }
 
+    private void createSelectGroup() {
+        grpSelect = new Group(container, SWT.NONE);
+        grpSelect.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, false));
+        GridLayout glGrpSelect = new GridLayout(2, false);
+        glGrpSelect.horizontalSpacing = 15;
+        glGrpSelect.verticalSpacing = 10;
+        grpSelect.setLayout(glGrpSelect);
+        grpSelect.setText("Select");
+
+        Label lblWorkspace = new Label(grpSelect, SWT.NONE);
+        lblWorkspace.setText("Workspace");
+        lblWorkspace.setLayoutData(new GridData(SWT.LEFT, SWT.TOP, false, false));
+
+        cbbWorkspace = new Combo(grpSelect, SWT.READ_ONLY);
+        cbbWorkspace.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
+    }
+
     private Text createTextbox() {
         Text text = new Text(grpAuthentication, SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
@@ -96,7 +123,7 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
         return text;
     }
 
-    private Text createPasswordTextbox(){
+    private Text createPasswordTextbox() {
         Text text = new Text(grpAuthentication, SWT.PASSWORD | SWT.BORDER);
         GridData gridData = new GridData(SWT.FILL, SWT.CENTER, true, false);
         gridData.widthHint = 200;
@@ -111,19 +138,28 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
         label.setLayoutData(gridData);
     }
 
-    private void testConnect(String url, String apiKey, String project) {
+    private void connect(String url, String apiKey) {
         btnTestConnection.setEnabled(false);
         lblConnectionStatus.setForeground(lblConnectionStatus.getDisplay().getSystemColor(SWT.COLOR_BLACK));
         lblConnectionStatus.setText("Connecting...");
         thread = new Thread(() -> {
             try {
                 // test connection here
-                RallyConnector connector = new RallyConnector(url, apiKey, project);
-
+                RallyConnector connector = new RallyConnector(url, apiKey);
+                workspaces = connector.getWorkspaces();
                 syncExec(() -> {
                     lblConnectionStatus
                             .setForeground(lblConnectionStatus.getDisplay().getSystemColor(SWT.COLOR_DARK_GREEN));
                     lblConnectionStatus.setText("Succeeded!");
+                    String[] wpNames = workspaces.stream().map(RallyWorkspace::getName).toArray(String[]::new);
+                    cbbWorkspace.setItems(wpNames);
+                    if (!workspaces.isEmpty()) {
+                        int idx = IntStream.range(0, workspaces.size())
+                                .filter(i -> workspaceRefFromConfig.equals(workspaces.get(i).getRef()))
+                                .findFirst()
+                                .orElse(-1);
+                        cbbWorkspace.select(idx);
+                    }
                 });
             } catch (Exception e) {
                 System.err.println("Cannot connect to Rally.");
@@ -154,6 +190,7 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             @Override
             public void widgetSelected(SelectionEvent e) {
                 recursiveSetEnabled(grpAuthentication, chckEnableIntegration.getSelection());
+                recursiveSetEnabled(grpSelect, chckEnableIntegration.getSelection());
             }
         });
     }
@@ -182,7 +219,9 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             pluginStore.setBoolean(RallyConstant.PREF_RALLY_ENABLED, chckEnableIntegration.getSelection());
             pluginStore.setString(RallyConstant.PREF_RALLY_API_KEY, txtApiKey.getText());
             pluginStore.setString(RallyConstant.PREF_RALLY_URL, txtUrl.getText());
-            pluginStore.setString(RallyConstant.PREF_RALLY_WORKSPACE, txtWorkspace.getText());
+            int idxWorkspace = cbbWorkspace.getSelectionIndex();
+            RallyWorkspace rallyWorkspace = workspaces.get(idxWorkspace);
+            pluginStore.setString(RallyConstant.PREF_RALLY_WORKSPACE, rallyWorkspace.getRef());
 
             pluginStore.save();
 
@@ -200,9 +239,16 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             chckEnableIntegration.setSelection(pluginStore.getBoolean(RallyConstant.PREF_RALLY_ENABLED, false));
             chckEnableIntegration.notifyListeners(SWT.Selection, new Event());
 
-            txtApiKey.setText(pluginStore.getString(RallyConstant.PREF_RALLY_API_KEY, ""));
-            txtUrl.setText(pluginStore.getString(RallyConstant.PREF_RALLY_URL, ""));
-            txtWorkspace.setText(pluginStore.getString(RallyConstant.PREF_RALLY_WORKSPACE, ""));
+            String url = pluginStore.getString(RallyConstant.PREF_RALLY_URL, "");
+            String apiKey = pluginStore.getString(RallyConstant.PREF_RALLY_API_KEY, "");
+            txtUrl.setText(url);
+            txtApiKey.setText(apiKey);
+            workspaceRefFromConfig = pluginStore.getString(RallyConstant.PREF_RALLY_WORKSPACE, "");
+
+            boolean isEnable = pluginStore.getBoolean(RallyConstant.PREF_RALLY_ENABLED, false);
+            if (isEnable) {
+                connect(url, apiKey);
+            }
 
             container.layout(true, true);
         } catch (ResourceException e) {

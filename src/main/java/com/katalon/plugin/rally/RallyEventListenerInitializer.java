@@ -46,8 +46,7 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
 
                     RallyConnector connector = new RallyConnector(
                             preferences.getString(RallyConstant.PREF_RALLY_URL, ""),
-                            preferences.getString(RallyConstant.PREF_RALLY_API_KEY, ""),
-                            preferences.getString(RallyConstant.PREF_RALLY_WORKSPACE, "")
+                            preferences.getString(RallyConstant.PREF_RALLY_API_KEY, "")
                     );
 
                     Application application = ApplicationManager.getInstance();

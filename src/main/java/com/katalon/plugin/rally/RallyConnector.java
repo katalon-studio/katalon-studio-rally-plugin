@@ -1,7 +1,9 @@
 package com.katalon.plugin.rally;
 
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.katalon.platform.api.execution.TestCaseExecutionContext;
+import com.katalon.plugin.rally.model.RallyWorkspace;
 import com.rallydev.rest.RallyRestApi;
 import com.rallydev.rest.request.CreateRequest;
 import com.rallydev.rest.request.GetRequest;
@@ -10,6 +12,7 @@ import com.rallydev.rest.response.CreateResponse;
 import com.rallydev.rest.response.GetResponse;
 import com.rallydev.rest.response.QueryResponse;
 import com.rallydev.rest.util.QueryFilter;
+import org.json.simple.JSONArray;
 
 import java.io.IOException;
 import java.net.URI;
@@ -18,6 +21,8 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RallyConnector {
     private String url;
@@ -32,14 +37,27 @@ public class RallyConnector {
 
     private static String RALLY_FIELD_REF = "_ref";
 
-    public RallyConnector(String url, String apiKey, String workspace) throws URISyntaxException, IOException {
+    public RallyConnector(String url, String apiKey) throws URISyntaxException, IOException {
         this.url = url;
         this.apiKey = apiKey;
-        this.workspace = workspace;
         this.rallyRestApi = new RallyRestApi(new URI(url), apiKey);
 
         GetResponse getResponse = rallyRestApi.get(new GetRequest("/user"));
         this.userRef = getResponse.getObject().get(RALLY_FIELD_REF).getAsString();
+    }
+
+    public List<RallyWorkspace> getWorkspaces() throws IOException {
+        GetResponse getResponse = rallyRestApi.get(new GetRequest("/workspace"));
+        JsonArray wpJsonArray = getResponse.getObject().get("Results").getAsJsonArray();
+        List<RallyWorkspace> result = new ArrayList<>();
+        wpJsonArray.forEach(wp ->{
+            JsonObject wpJson = wp.getAsJsonObject();
+            RallyWorkspace workspace = new RallyWorkspace();
+            workspace.setName(wpJson.get("Name").getAsString());
+            workspace.setRef(wpJson.get(RALLY_FIELD_REF).getAsString());
+            result.add(workspace);
+        });
+        return result;
     }
 
     public String query(String type, QueryFilter filter) throws IOException {
@@ -83,5 +101,9 @@ public class RallyConnector {
                 System.out.println(error);
             }
         }
+    }
+
+    public void close() throws IOException {
+        rallyRestApi.close();
     }
 }

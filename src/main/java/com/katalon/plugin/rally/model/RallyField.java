@@ -7,4 +7,5 @@ public class RallyField {
 
     public static String RESULTS = "Results";
 
+    public static String FORMATTED_ID = "FormattedID";
 }

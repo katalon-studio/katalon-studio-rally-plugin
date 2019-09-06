@@ -63,8 +63,7 @@ public class RallyConnector {
 
     public String query(String type, String formattedId) throws IOException {
         System.out.printf("Rally: Query %s with ID %s\n", type, formattedId);
-        QueryFilter filter = new QueryFilter(RallyConstant.RALLY_FIELD_FORMATTED_ID,
-                "=", formattedId);
+        QueryFilter filter = new QueryFilter(RallyField.FORMATTED_ID, "=", formattedId);
         QueryRequest queryRequest = new QueryRequest(type);
         queryRequest.setQueryFilter(filter);
         if (!StringUtils.isEmpty(workspaceRef)) {

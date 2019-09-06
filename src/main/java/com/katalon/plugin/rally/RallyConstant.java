@@ -16,10 +16,4 @@ public interface RallyConstant {
     String INTEGRATION_ID = "com.katalon.plugin.rally.RallyIntegration";
 
     String INTEGRATION_TESTCASE_ID = "rally.testcase.id";
-
-    String RALLY_TYPE_TEST_CASE = "TestCase";
-
-    String RALLY_FIELD_FORMATTED_ID = "FormattedID";
-
-    String RALLY_FIELD_USER_NAME = "UserName";
 }

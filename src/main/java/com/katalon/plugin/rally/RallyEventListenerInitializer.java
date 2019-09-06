@@ -62,8 +62,7 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
                             }
                             String rallyTCFormattedId = integration.getProperties().get(RallyConstant.INTEGRATION_TESTCASE_ID);
                             if (!StringUtils.isEmpty(rallyTCFormattedId)) {
-                                String testCaseRef = connector.query(RallyConstant.RALLY_TYPE_TEST_CASE,
-                                        rallyTCFormattedId);
+                                String testCaseRef = connector.query("TestCase", rallyTCFormattedId);
                                 if (!StringUtils.isEmpty(testCaseRef)) {
                                     connector.createTestCaseResult(testCaseRef, testCaseExecutionContext);
                                 }

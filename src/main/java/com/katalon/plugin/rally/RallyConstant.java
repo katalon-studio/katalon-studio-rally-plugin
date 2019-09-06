@@ -19,8 +19,6 @@ public interface RallyConstant {
 
     String RALLY_TYPE_TEST_CASE = "TestCase";
 
-    String RALLY_TYPE_USER = "User";
-
     String RALLY_FIELD_FORMATTED_ID = "FormattedID";
 
     String RALLY_FIELD_USER_NAME = "UserName";

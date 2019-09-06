@@ -2,12 +2,11 @@ package com.katalon.plugin.rally;
 
 import com.katalon.platform.api.Application;
 import com.katalon.platform.api.controller.TestCaseController;
-import com.katalon.platform.api.exception.ResourceException;
 import com.katalon.platform.api.model.Integration;
 import com.katalon.platform.api.model.ProjectEntity;
 import com.katalon.platform.api.model.TestCaseEntity;
 import com.katalon.platform.api.service.ApplicationManager;
-import com.rallydev.rest.util.QueryFilter;
+import org.apache.commons.lang3.StringUtils;
 import org.osgi.service.event.Event;
 
 import com.katalon.platform.api.event.EventListener;
@@ -37,16 +36,18 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
                     System.out.println("Rally: Start sending summary message to channel:");
                     System.out.println(
                             "Summary execution result of test suite: " + testSuiteContext.getSourceId()
-                                    + "\nTotal test cases: " + Integer.toString(testSuiteSummary.getTotalTestCases())
-                                    + "\nTotal passes: " + Integer.toString(testSuiteSummary.getTotalPasses())
-                                    + "\nTotal failures: " + Integer.toString(testSuiteSummary.getTotalFailures())
-                                    + "\nTotal errors: " + Integer.toString(testSuiteSummary.getTotalErrors())
-                                    + "\nTotal skipped: " + Integer.toString(testSuiteSummary.getTotalSkipped()));
-                    System.out.println("Rally: Summary message has been successfully sent");
+                                    + "\nTotal test cases: " + testSuiteSummary.getTotalTestCases()
+                                    + "\nTotal passes: " + testSuiteSummary.getTotalPasses()
+                                    + "\nTotal failures: " + testSuiteSummary.getTotalFailures()
+                                    + "\nTotal errors: " + testSuiteSummary.getTotalErrors()
+                                    + "\nTotal skipped: " + testSuiteSummary.getTotalSkipped());
 
                     RallyConnector connector = new RallyConnector(
                             preferences.getString(RallyConstant.PREF_RALLY_URL, ""),
                             preferences.getString(RallyConstant.PREF_RALLY_API_KEY, "")
+                    );
+                    connector.setWorkspaceRef(
+                            preferences.getString(RallyConstant.PREF_RALLY_WORKSPACE, "")
                     );
 
                     Application application = ApplicationManager.getInstance();
@@ -60,15 +61,18 @@ public class RallyEventListenerInitializer implements EventListenerInitializer, 
                                 return;
                             }
                             String rallyTCFormattedId = integration.getProperties().get(RallyConstant.INTEGRATION_TESTCASE_ID);
-                            QueryFilter filter = new QueryFilter(RallyConstant.RALLY_FIELD_FORMATTED_ID,
-                                    "=", rallyTCFormattedId);
-                            String testCaseRef = connector.query(RallyConstant.RALLY_TYPE_TEST_CASE, filter);
-                            connector.createTestCaseResult(testSuiteContext.getSourceId(), testCaseRef, testCaseExecutionContext);
-
+                            if (!StringUtils.isEmpty(rallyTCFormattedId)) {
+                                String testCaseRef = connector.query(RallyConstant.RALLY_TYPE_TEST_CASE,
+                                        rallyTCFormattedId);
+                                if (!StringUtils.isEmpty(testCaseRef)) {
+                                    connector.createTestCaseResult(testCaseRef, testCaseExecutionContext);
+                                }
+                            }
                         } catch (Exception e) {
-                            e.printStackTrace();
+                            e.printStackTrace(System.out);
                         }
                     });
+                    System.out.println("Rally: Summary message has been successfully sent");
                 }
             } catch (Exception e) {
                 e.printStackTrace(System.out);

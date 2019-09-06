@@ -157,7 +157,7 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
                         int idx = IntStream.range(0, workspaces.size())
                                 .filter(i -> workspaceRefFromConfig.equals(workspaces.get(i).getRef()))
                                 .findFirst()
-                                .orElse(-1);
+                                .orElse(0);
                         cbbWorkspace.select(idx);
                     }
                 });
@@ -220,8 +220,10 @@ public class RallyPreferencePage extends PreferencePage implements RallyComponen
             pluginStore.setString(RallyConstant.PREF_RALLY_API_KEY, txtApiKey.getText());
             pluginStore.setString(RallyConstant.PREF_RALLY_URL, txtUrl.getText());
             int idxWorkspace = cbbWorkspace.getSelectionIndex();
-            RallyWorkspace rallyWorkspace = workspaces.get(idxWorkspace);
-            pluginStore.setString(RallyConstant.PREF_RALLY_WORKSPACE, rallyWorkspace.getRef());
+            if (idxWorkspace > -1 && !workspaces.isEmpty()) {
+                RallyWorkspace rallyWorkspace = workspaces.get(idxWorkspace);
+                pluginStore.setString(RallyConstant.PREF_RALLY_WORKSPACE, rallyWorkspace.getRef());
+            }
 
             pluginStore.save();
 

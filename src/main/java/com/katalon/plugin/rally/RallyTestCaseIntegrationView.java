@@ -3,6 +3,7 @@ package com.katalon.plugin.rally;
 import com.katalon.platform.api.extension.TestCaseIntegrationViewDescription;
 import com.katalon.platform.api.model.Integration;
 import com.katalon.platform.api.model.TestCaseEntity;
+import org.apache.commons.lang3.StringUtils;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
@@ -32,11 +33,14 @@ public class RallyTestCaseIntegrationView implements TestCaseIntegrationViewDesc
         container.setLayout(gridLayout);
 
         Integration integration = testCase.getIntegration(RallyConstant.INTEGRATION_ID);
-        if(integration != null) {
+        if (integration != null) {
             Map<String, String> integrationProps = integration.getProperties();
-           if(integrationProps.containsKey(RallyConstant.INTEGRATION_TESTCASE_ID)){
-               txtId.setText(integrationProps.get(RallyConstant.INTEGRATION_TESTCASE_ID));
-           }
+            if (integrationProps.containsKey(RallyConstant.INTEGRATION_TESTCASE_ID)) {
+                String testCaseId = integrationProps.get(RallyConstant.INTEGRATION_TESTCASE_ID);
+                if (!StringUtils.isEmpty(testCaseId)) {
+                    txtId.setText(testCaseId);
+                }
+            }
         }
 
         txtId.addModifyListener(modifyEvent -> {

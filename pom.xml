@@ -21,7 +21,7 @@
         <dependency>
             <groupId>com.katalon</groupId>
             <artifactId>com.katalon.platform</artifactId>
-            <version>1.0.12</version>
+            <version>1.0.17</version>
         </dependency>
         <!-- https://mvnrepository.com/artifact/com.googlecode.json-simple/json-simple -->
         <dependency>
@@ -70,7 +70,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId};singleton:=true
                         </Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
-                        <Import-Package></Import-Package>
+                        <Import-Package/>
                         <DynamicImport-Package>*</DynamicImport-Package>
                         <_noee>true</_noee>
                         <_nouse>true</_nouse>

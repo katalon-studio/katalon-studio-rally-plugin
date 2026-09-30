@@ -18,7 +18,7 @@ public class RallyToolItemDescription implements ToolItemDescription {
 
     @Override
     public String iconUrl() {
-        return "platform:/plugin/" + RallyConstant.PLUGIN_ID + "/icons/icon.png";
+        return "platform:/plugin/" + RallyConstant.PLUGIN_ID + "/icons-v2/rally.svg";
     }
 
     @Override

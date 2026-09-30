@@ -1,15 +1,10 @@
 package com.katalon.plugin.rally;
 
-import org.osgi.framework.Bundle;
-import org.osgi.framework.FrameworkUtil;
-
 import com.katalon.platform.api.extension.ToolItemDescription;
 import com.katalon.platform.api.service.ApplicationManager;
 import com.katalon.platform.api.ui.DialogActionService;
 
 public class RallyToolItemDescription implements ToolItemDescription {
-
-    private static final Bundle BUNDLE = FrameworkUtil.getBundle(RallyToolItemDescription.class);
 
     @Override
     public String name() {
@@ -23,8 +18,7 @@ public class RallyToolItemDescription implements ToolItemDescription {
 
     @Override
     public String iconUrl() {
-        String iconPath = IconResolver.resolve(BUNDLE, "icons/icon.png", "icons-v2/rally.svg");
-        return "platform:/plugin/" + RallyConstant.PLUGIN_ID + "/" + iconPath;
+        return "platform:/plugin/" + RallyConstant.PLUGIN_ID + "/icons-v2/rally.svg";
     }
 
     @Override
